@@ -215,3 +215,161 @@ db.coleccionTemporal.aggregate([
     $out: "telefonos"
   }
 ]);
+
+// Agregar datos a la coleccion correosElectronicos
+
+db.coleccionTemporal.aggregate([
+  {
+    $project: {
+      correo_Electronico: { $split: ["$correo_Electronico", "--"] }  
+    }
+  },
+  { $unwind: "$correo_Electronico" },
+  {
+    $group: {
+      _id: "$correo_Electronico" 
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      correoElectronico: "$_id" 
+    }
+  },
+  {
+    $out: "correosElectronicos"
+  }
+]);
+
+// Agregar datos a la coleccion tiposEstablecimiento
+
+db.coleccionTemporal.aggregate([
+
+  {
+  $project: {
+    tipo_Establecimiento: { $split: ["$tipo_Establecimiento", ","] }  
+  }
+},
+
+{ $unwind: "$tipo_Establecimiento" },
+
+  {
+    $group:{
+      _id: "$tipo_Establecimiento"
+    }
+  },
+
+  {
+  $project: {
+    _id: 0,
+    tipoEstablecimiento: "$_id" 
+  }
+},
+{
+  $out: "tiposEstablecimiento"
+}
+]);
+
+// Agregar datos a la coleccion aniosInformacionReportada
+
+db.coleccionTemporal.aggregate([
+
+  {
+    $group:{
+      _id: {anio: {$year: "$anio"}}
+    }
+  },
+                                           
+  {
+  $project: {
+    _id: 0,
+    anio: "$_id" 
+  }
+},
+{
+  $out: "aniosInformacionReportada"
+}
+]);
+
+// Agregar datos a la coleccion especializaciones
+
+db.coleccionTemporal.aggregate([
+
+  {
+  $project: {
+    especialidad: { $split: ["$especialidad", ","] }  
+  }
+},
+
+{ $unwind: "$especialidad" },
+
+  {
+    $group:{
+      _id: "$especialidad"
+    }
+  },
+
+  {
+  $project: {
+    _id: 0,
+    especializacion: "$_id" 
+  }
+},
+{
+  $out: "especializaciones"
+}
+]);
+
+// Agregar datos a la coleccion jornadas
+
+db.coleccionTemporal.aggregate([
+
+  {
+  $project: {
+    jornadas: { $split: ["$jornadas", ","] }  
+  }
+},
+
+{ $unwind: "$jornadas" },
+
+  {
+    $group:{
+      _id: "$jornadas"
+    }
+  },
+
+  {
+  $project: {
+    _id: 0,
+    jornada: "$_id" 
+  }
+},
+{
+  $out: "jornadas"
+}
+]);
+
+// Agregar datos a la coleccion establecimientosEducativos
+
+db.coleccionTemporal.aggregate([
+  {
+    $group:{
+      _id:{
+        nombreEstablecimiento: "$nombreestablecimiento",
+        numeroSedes: "$numero_de_Sedes"
+      }
+    }
+  },
+
+  {
+    $project:{
+      _id:0,
+      nombreEstablecimiento:"$_id.nombreEstablecimiento",
+      numeroSedes: "$_id.numeroSedes"
+    }
+  },
+
+  {
+    $out: "establecimientosEducativos"
+  }
+]);
