@@ -165,56 +165,56 @@ db.coleccionTemporal.aggregate([
 // Agregar datos a la coleccion telefonos
 
 db.coleccionTemporal.aggregate([
-  
-    {
-    $addFields: {
-      telefono: { $toString: "$telefono" }
-   }
-  },
-
-
   {
-    $project: {
-      telefono: {
-        $split: [
-          {
-              input: {
-                $replaceAll: {
-                  input: {
-                    $replaceAll: {
-                      input: "$telefono",
-                      find: "--",
-                      replacement: ","
-                    }
-                  },
-                  find: "/",
-                  replacement: ","
-                }
-              },
+  $addFields: {
+    telefono: { $toString: "$telefono" }
+  }
+},
+  {
+  $project: {
+    telefono: {
+      $split: [
+        {
+          $replaceAll: {
+            input: {
+              $replaceAll: {
+                input: {
+                  $replaceAll: {
+                    input: "$telefono",
+                    find: "--",
+                    replacement: ","
+                  }
+                },
+                find: "/",
+                replacement: ","
+              }
             },
-          ","
-        ]
-      }
+            find: "-",
+            replacement: ","
+          }
+        },
+        ","
+      ]
     }
-  },
-
-  
-
+  }
+},
+  { $unwind: "$telefono" },
   {
     $group: {
-      _id: "$telefono" 
+      _id: "$telefono"
     }
   },
   {
     $project: {
       _id: 0,
-      telefono: "$_id" 
+      telefono: "$_id"
     }
   },
   {
     $out: "telefonos"
   }
 ]);
+
 
 // Agregar datos a la coleccion correosElectronicos
 
@@ -274,11 +274,21 @@ db.coleccionTemporal.aggregate([
 
 db.coleccionTemporal.aggregate([
 
-  {
-    $group:{
-      _id: {anio: {$year: "$anio"}}
+ {
+  $addFields:{
+    anioEntero:{
+      $toInt: {
+        $replaceAll: {input: "$anio", find: ",", replacement: ""}
+      }
     }
-  },
+  }
+ },
+
+ {
+   $group:{
+    _id:"$anioEntero"
+   }
+ },
                                            
   {
   $project: {
